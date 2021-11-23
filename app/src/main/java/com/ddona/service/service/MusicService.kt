@@ -37,7 +37,7 @@ class MusicService : Service() {
         val builder = Notification.Builder(this)
         builder.setContentTitle("Music")
         builder.setContentText("This is music app")
-        builder.setSmallIcon(R.mipmap.ic_launcher)
+        builder.setSmallIcon(R.mipmap.ic_launcher_round)
         val notificationManger: NotificationManager =
             getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build

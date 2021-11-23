@@ -1,14 +1,10 @@
 package com.ddona.service.media
 
-import android.Manifest
 import android.media.MediaPlayer
 import com.ddona.service.model.Song
 import android.provider.MediaStore
 
-import android.app.Activity
 import android.content.Context
-import androidx.core.app.ActivityCompat
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.util.Log
 
@@ -25,6 +21,7 @@ object MediaManager {
 
     init {
         mediaPlayer.setOnCompletionListener {
+            nextSong()
             //next bai
         }
     }
