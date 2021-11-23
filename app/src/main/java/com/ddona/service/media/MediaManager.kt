@@ -52,10 +52,9 @@ object MediaManager {
     }
 
     fun nextSong() {
-        if (currentSong > songs.size - 2) {
+        currentSong++
+        if (currentSong > songs.size - 1) {
             currentSong = 0
-        } else {
-            currentSong++
         }
         playPauseSong(true)
     }
@@ -79,47 +78,38 @@ object MediaManager {
             MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.Audio.Media.ARTIST
         )
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            val PERMISSION = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-            ActivityCompat.requestPermissions((context as Activity?)!!, PERMISSION, 1234)
-        } else {
-            val cursor: Cursor = context.contentResolver
-                .query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    columnsName, null, null, null, null
-                )!!
-            val indexData: Int = cursor.getColumnIndex(columnsName[0])
-            val indexTitle: Int = cursor.getColumnIndex(columnsName[1])
-            val indexDisPlay: Int = cursor.getColumnIndex(columnsName[2])
-            val indexDuration: Int = cursor.getColumnIndex(columnsName[3])
-            val indexAlbum: Int = cursor.getColumnIndex(columnsName[4])
-            var data: String
-            var title: String
-            var display: String
-            var album: String
-            var duration: Long
-            val canNext = cursor.moveToFirst()
-            songs.clear()
-            while (!cursor.isAfterLast) {
-                data = cursor.getString(indexData)
-                title = cursor.getString(indexTitle)
-                display = cursor.getString(indexDisPlay)
-                album = cursor.getString(indexAlbum)
-                duration = cursor.getLong(indexDuration)
-                if (display.lastIndexOf(".") > 0) {
-                    val extension = display.substring(display.lastIndexOf("."))
-                    if (extension.equals(".mp3", ignoreCase = true)) {
-                        songs.add(Song(title, data, display, album, duration))
-                    }
+        val cursor: Cursor = context.contentResolver
+            .query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                columnsName, null, null, null, null
+            )!!
+        val indexData: Int = cursor.getColumnIndex(columnsName[0])
+        val indexTitle: Int = cursor.getColumnIndex(columnsName[1])
+        val indexDisPlay: Int = cursor.getColumnIndex(columnsName[2])
+        val indexDuration: Int = cursor.getColumnIndex(columnsName[3])
+        val indexAlbum: Int = cursor.getColumnIndex(columnsName[4])
+        var data: String
+        var title: String
+        var display: String
+        var album: String
+        var duration: Long
+        val canNext = cursor.moveToFirst()
+        songs.clear()
+        while (!cursor.isAfterLast) {
+            data = cursor.getString(indexData)
+            title = cursor.getString(indexTitle)
+            display = cursor.getString(indexDisPlay)
+            album = cursor.getString(indexAlbum)
+            duration = cursor.getLong(indexDuration)
+            if (display.lastIndexOf(".") > 0) {
+                val extension = display.substring(display.lastIndexOf("."))
+                if (extension.equals(".mp3", ignoreCase = true)) {
+                    songs.add(Song(title, data, display, album, duration))
                 }
-                cursor.moveToNext()
             }
-            cursor.close()
+            cursor.moveToNext()
         }
+        cursor.close()
         Log.d("doanpt", "Song size is ${songs.size}")
     }
 

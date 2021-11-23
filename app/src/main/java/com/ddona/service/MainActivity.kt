@@ -1,17 +1,91 @@
 package com.ddona.service
 
+import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.ddona.service.media.MediaManager
+import android.os.IBinder
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import com.ddona.service.databinding.ActivityMainBinding
 import com.ddona.service.service.MusicService
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var musicService: MusicService
+
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        MediaManager.getSongList(this)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            startMusicService()
+        } else {
+            ActivityCompat
+                .requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    123
+                )
+        }
+        binding.btnNext.setOnClickListener {
+            musicService.nextSong()
+        }
+        binding.btnPrevious.setOnClickListener {
+            musicService.previousSong()
+        }
+        binding.btnPause.setOnClickListener {
+            musicService.playPauseSong()
+        }
+        binding.btnPlay.setOnClickListener {
+            musicService.playPauseSong()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 123) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startMusicService()
+            } else {
+                Toast.makeText(this, "We can't do anything without permission", Toast.LENGTH_SHORT)
+                    .show()
+                finish()
+            }
+        }
+    }
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicBinder
+            musicService = binder.getMusicService()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+        }
+
+    }
+
+    private fun startMusicService() {
         val intent = Intent(this, MusicService::class.java)
-        startService(intent)
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+        bindService(intent, connection, BIND_AUTO_CREATE)
     }
 }
