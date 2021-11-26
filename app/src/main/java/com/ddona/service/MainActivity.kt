@@ -3,6 +3,7 @@ package com.ddona.service
 import android.Manifest
 import android.content.ComponentName
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Build
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ddona.service.databinding.ActivityMainBinding
 import com.ddona.service.service.MusicService
 
@@ -39,6 +41,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.btnNext.setOnClickListener {
             musicService.nextSong()
+            val nextIntent = Intent("com.doan.dep.trai")
+//            sendBroadcast(nextIntent)
+            LocalBroadcastManager.getInstance(this).sendBroadcast(nextIntent)
         }
         binding.btnPrevious.setOnClickListener {
             musicService.previousSong()

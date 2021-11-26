@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ddona.service">
 
+    <permission
+        android:name="com.ddona.service.LOGIN_PERMISSION"
+        android:protectionLevel="signatureOrSystem"/>
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -27,6 +31,19 @@
             android:name=".service.MusicService"
             android:enabled="true"
             android:exported="true" />
+
+        <receiver
+            android:name=".receiver.MyFirstBroadcastReceiver"
+            android:enabled="true"
+            android:permission="com.ddona.service.LOGIN_PERMISSION"
+            android:exported="true">
+            <!--            <intent-filter-->
+            <!--                android:priority="999">-->
+            <!--                            <action android:name="android.intent.action.AIRPLANE_MODE" />-->
+            <!--                            <action android:name="android.intent.action.SCREEN_OFF" />-->
+            <!--                            <action android:name="com.doan.dep.trai" />-->
+            <!--                        </intent-filter>-->
+        </receiver>
     </application>
 
 </manifest>
