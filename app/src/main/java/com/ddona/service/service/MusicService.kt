@@ -1,6 +1,8 @@
 package com.ddona.service.service
 
 import android.app.*
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
@@ -15,10 +17,12 @@ import com.ddona.service.R
 import com.ddona.service.media.MediaManager
 import com.ddona.service.receiver.MyFirstBroadcastReceiver
 import com.ddona.service.receiver.MySecondBroadcastManager
+import com.ddona.service.util.Const
 
 class MusicService : Service() {
     private val firstBroadcast = MyFirstBroadcastReceiver()
     private val secondBroadcast = MySecondBroadcastManager()
+    private val musicReceiver = MusicReceiver()
 
     private val binder = MusicBinder()
     override fun onBind(intent: Intent?): IBinder {
@@ -50,12 +54,21 @@ class MusicService : Service() {
         intentFilter2.addAction("com.doan.dep.trai")
         intentFilter2.priority = 999
 //        registerReceiver(secondBroadcast, intentFilter2)
-        LocalBroadcastManager.getInstance(this).registerReceiver(firstBroadcast, intentFilter)
+        LocalBroadcastManager.getInstance(this).registerReceiver(secondBroadcast, intentFilter)
+
+        val musicFilter = IntentFilter()
+        musicFilter.addAction(Const.INTENT_STOP_APPLICATION)
+        musicFilter.addAction(Const.INTENT_PREVIOUS_SONG)
+        musicFilter.addAction(Const.INTENT_PLAY_PAUSE_SONG)
+        musicFilter.addAction(Const.INTENT_NEXT_SONG)
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(musicReceiver, musicFilter)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun pushNotification() {
         val remoteView = RemoteViews(packageName, R.layout.layout_notification_music)
+
         val builder = Notification.Builder(this)
         builder.setSmallIcon(R.mipmap.ic_launcher_round)
         val notificationManger: NotificationManager =
@@ -94,7 +107,9 @@ class MusicService : Service() {
     }
 
     override fun onDestroy() {
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(firstBroadcast)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(secondBroadcast)
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(musicReceiver)
         unregisterReceiver(firstBroadcast)
         super.onDestroy()
     }
@@ -113,5 +128,18 @@ class MusicService : Service() {
 
     fun previousSong() {
         MediaManager.previousSong()
+    }
+
+    inner class MusicReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d("doanpt", "music receive action: ${intent?.action}")
+            when (intent?.action) {
+                Const.INTENT_NEXT_SONG -> MediaManager.nextSong()
+                Const.INTENT_PLAY_PAUSE_SONG -> MediaManager.playPauseSong()
+                Const.INTENT_PREVIOUS_SONG -> MediaManager.previousSong()
+                Const.INTENT_STOP_APPLICATION -> this@MusicService.stopSelf()
+            }
+        }
+
     }
 }

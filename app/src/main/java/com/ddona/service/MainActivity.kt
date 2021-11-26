@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ddona.service.databinding.ActivityMainBinding
 import com.ddona.service.service.MusicService
+import com.ddona.service.util.Const
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,19 +41,27 @@ class MainActivity : AppCompatActivity() {
                 )
         }
         binding.btnNext.setOnClickListener {
-            musicService.nextSong()
-            val nextIntent = Intent("com.doan.dep.trai")
-//            sendBroadcast(nextIntent)
+            val nextIntent = Intent(Const.INTENT_NEXT_SONG)
             LocalBroadcastManager.getInstance(this).sendBroadcast(nextIntent)
+//            musicService.nextSong()
+//            val nextIntent = Intent("com.doan.dep.trai")
+//            sendBroadcast(nextIntent)
+//            LocalBroadcastManager.getInstance(this).sendBroadcast(nextIntent)
         }
         binding.btnPrevious.setOnClickListener {
-            musicService.previousSong()
+            val previousIntent = Intent(Const.INTENT_PREVIOUS_SONG)
+            LocalBroadcastManager.getInstance(this).sendBroadcast(previousIntent)
+//            musicService.previousSong()
         }
         binding.btnPause.setOnClickListener {
-            musicService.playPauseSong()
+            val playPauseIntent = Intent(Const.INTENT_PLAY_PAUSE_SONG)
+            LocalBroadcastManager.getInstance(this).sendBroadcast(playPauseIntent)
+//            musicService.playPauseSong()
         }
         binding.btnPlay.setOnClickListener {
-            musicService.playPauseSong()
+            val playPauseIntent = Intent(Const.INTENT_PLAY_PAUSE_SONG)
+            LocalBroadcastManager.getInstance(this).sendBroadcast(playPauseIntent)
+//            musicService.playPauseSong()
         }
     }
 
