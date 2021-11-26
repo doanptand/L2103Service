@@ -1,14 +1,12 @@
 package com.ddona.service.service
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.view.WindowManager
 import com.ddona.service.R
 import com.ddona.service.media.MediaManager
 
@@ -40,6 +38,11 @@ class MusicService : Service() {
         builder.setSmallIcon(R.mipmap.ic_launcher_round)
         val notificationManger: NotificationManager =
             getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+//        val windowManager: WindowManager =
+//            getSystemService(WINDOW_SERVICE) as WindowManager
+//
+//        val wallpaperManger: WallpaperManager =
+//            getSystemService(WALLPAPER_SERVICE) as WallpaperManager
         if (Build.VERSION.SDK_INT >= Build
                 .VERSION_CODES.O
         ) {
